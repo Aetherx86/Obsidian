@@ -18,8 +18,8 @@ Obsidian은 외부 의존성이 전혀 없는 베어메탈 중간 표현(IR) 로
 
 ## 성능
 
-- **호출 오버헤드 (Invocation Latency)**: 최신 프로세서 기준 JIT 호출당 약 2.31나노초.
-- **방출 속도 (Emission Speed)**: 인메모리 기준 초당 50,000,000개 이상의 명령어 생성.
+- **호출 오버헤드 (Invocation Latency)**: Apple Silicon Mac에서 JIT 호출당 약 0.7~1.2ns, GitHub ubuntu x86_64 러너에서 약 1.1ns (`obsidian bench --json`의 `call_overhead_ns`).
+- **컴파일 속도 (Compile Speed)**: 벤치마크 프로그램의 최적화, 레지스터 할당, 코드 생성에 약 19마이크로초 (`compile_us`). JIT 코드는 IR 인터프리터보다 약 30배 빠릅니다.
 
 ## 빌드 및 사용법
 

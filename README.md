@@ -14,8 +14,8 @@ Obsidian provides a zero-dependency, bare-metal intermediate representation lowe
 
 ## Performance
 
-- **Invocation Latency**: ~2.31 nanoseconds per JIT call on modern processors.
-- **Emission Speed**: > 50,000,000 instructions generated per second in memory.
+- **Invocation Latency**: about 0.7 to 1.2 ns per JIT call on an Apple Silicon Mac and about 1.1 ns on the GitHub ubuntu x86_64 runner (`obsidian bench --json`, `call_overhead_ns`).
+- **Compile Speed**: about 19 microseconds to optimize, allocate and emit the benchmark program (`compile_us`), and JIT code runs the benchmark loop about 30 times faster than the IR interpreter.
 
 ## Building
 
