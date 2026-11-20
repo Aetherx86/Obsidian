@@ -117,7 +117,12 @@ pub fn queryProtection(io: std.Io, gpa: std.mem.Allocator, addr: usize) !?Protec
             return .{ .read = info.protection.READ, .write = info.protection.WRITE, .exec = info.protection.EXEC };
         },
         .linux => {
-            const maps = std.Io.Dir.cwd().readFileAlloc(io, "/proc/self/maps", gpa, .limited(16 << 20)) catch return null;
+            // procfs reports a size of 0, so read it as a stream, not positionally.
+            var file = try std.Io.Dir.cwd().openFile(io, "/proc/self/maps", .{});
+            defer file.close(io);
+            var buf: [4096]u8 = undefined;
+            var reader = file.readerStreaming(io, &buf);
+            const maps = try reader.interface.allocRemaining(gpa, .limited(16 << 20));
             defer gpa.free(maps);
             var lines = std.mem.splitScalar(u8, maps, '\n');
             while (lines.next()) |line| {
@@ -176,7 +181,10 @@ test "sealed code pages are not writable" {
     if (!supported or nativeReturn42().len == 0) return error.SkipZigTest;
     var mem = try ExecMemory.create(nativeReturn42());
     defer mem.deinit();
-    const prot = (try queryProtection(std.testing.io, std.testing.allocator, mem.entryAddress())) orelse return error.SkipZigTest;
+    const queried = try queryProtection(std.testing.io, std.testing.allocator, mem.entryAddress());
+    // Both supported query mechanisms must work on these systems.
+    if (builtin.os.tag == .linux or builtin.os.tag == .macos) try std.testing.expect(queried != null);
+    const prot = queried orelse return error.SkipZigTest;
     try std.testing.expect(prot.exec);
     switch (strategy) {
         // The page itself is RWX; the hardware enforces W^X per thread.
