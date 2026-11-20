@@ -1,0 +1,14 @@
+# Sum of i*i for i in [0, n), clamped below at 1 by a host call.
+fn sum_squares(n) {
+    s = 0
+    i = 0
+loop:
+    br ge i, n, done
+    t = mul i, i
+    s = add s, t
+    i = add i, 1
+    jmp loop
+done:
+    r = call max(s, 1)
+    ret r
+}

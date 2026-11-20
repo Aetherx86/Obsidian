@@ -1,0 +1,17 @@
+# Many simultaneously live values: forces spilling with --regs.
+fn mix(a, b, c, d, e, f) {
+    p = mul a, b
+    q = xor c, d
+    r = shl e, 3
+    s = sar f, 1
+    t = sub p, q
+    u = add r, s
+    g = call gcd(a, b)
+    h = call clamp(c, -100, 100)
+    v = ult t, u
+    w = or g, h
+    x = add t, u
+    y = add x, v
+    z = add y, w
+    ret z
+}

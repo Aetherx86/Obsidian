@@ -1,0 +1,18 @@
+# Number of Collatz steps until n reaches 1.
+fn collatz(n) {
+    steps = 0
+loop:
+    br le n, 1, done
+    odd = and n, 1
+    br eq odd, 0, even
+    t = mul n, 3
+    n = add t, 1
+    jmp next
+even:
+    n = sar n, 1
+next:
+    steps = add steps, 1
+    jmp loop
+done:
+    ret steps
+}

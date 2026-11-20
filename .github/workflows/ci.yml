@@ -16,10 +16,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v4
-      - uses: mlugg/setup-zig@5a940f4199f14d79fa86144e3926f6eb94917088 # v1
+      - uses: mlugg/setup-zig@d1434d08867e3ee9daa34448df10607b98908d29 # v2.2.1
         with:
           version: 0.17.1
-      - run: zig build test
+      - run: zig fmt --check src build.zig
+      - run: zig build test --summary all
+      - run: zig build test -Doptimize=ReleaseSafe --summary all
       - run: zig build -Doptimize=ReleaseFast
-      - run: python3 .github/scripts/repo_guard.py .
-
+      - run: ./zig-out/bin/obsidian run examples/sum_squares.oir 10 --check
+      - run: ./zig-out/bin/obsidian run examples/mix.oir 12 18 -500 7 9 -33 --regs 0 --check
+      - run: ./zig-out/bin/obsidian fuzz --seed 1 --count 5000
+      - run: ./zig-out/bin/obsidian bench --json
+      - run: zig build -Dtarget=aarch64-linux -Doptimize=ReleaseSafe
+      - run: python3 .github/scripts/repo_guard.py . --strict
